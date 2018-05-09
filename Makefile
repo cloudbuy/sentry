@@ -38,6 +38,7 @@ install-sentry:
 
 install-sentry-dev:
 	@echo "--> Installing Sentry (dev)"
+	$(PIP) install "setuptools>=0.9.8" "pip>=8.0.0"
 	$(PIP) install -e ".[dev,tests,optional]"
 
 dev-docs:
