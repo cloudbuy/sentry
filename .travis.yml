@@ -1,4 +1,4 @@
-filter_secrets: false
+filter_secrets: false  # what's this? can't find it in travis docs
 group: deprecated-2017Q4
 dist: trusty
 sudo: required
@@ -48,26 +48,26 @@ script:
   - make travis-scan-$TEST_SUITE
 after_success:
   - codecov -e TEST_SUITE
-  - npm install -g @zeus-ci/cli
-  - zeus upload -t "text/xml+xunit" junit.xml
-  - zeus upload -t "text/xml+xunit" jest.junit.xml
-  - zeus upload -t "text/xml+coverage" coverage.xml
-  - zeus upload -t "text/xml+coverage" coverage/cobertura-coverage.xml
-  - zeus upload -t "text/html+pytest" pytest.html
-  - zeus upload -t "text/plain+pycodestyle" flake8.pycodestyle.log
-  - zeus upload -t "text/xml+checkstyle" eslint.checkstyle.xml
-  - zeus upload -t "application/webpack-stats+json" webpack-stats.json
+#  - npm install -g @zeus-ci/cli
+#  - zeus upload -t "text/xml+xunit" junit.xml
+#  - zeus upload -t "text/xml+xunit" jest.junit.xml
+#  - zeus upload -t "text/xml+coverage" coverage.xml
+#  - zeus upload -t "text/xml+coverage" coverage/cobertura-coverage.xml
+#  - zeus upload -t "text/html+pytest" pytest.html
+#  - zeus upload -t "text/plain+pycodestyle" flake8.pycodestyle.log
+#  - zeus upload -t "text/xml+checkstyle" eslint.checkstyle.xml
+#  - zeus upload -t "application/webpack-stats+json" webpack-stats.json
 after_failure:
   - dmesg | tail -n 100
-  - npm install -g @zeus-ci/cli
-  - zeus upload -t "text/xml+xunit" junit.xml
-  - zeus upload -t "text/xml+xunit" jest.junit.xml
-  - zeus upload -t "text/xml+coverage" coverage.xml
-  - zeus upload -t "text/xml+coverage" coverage/cobertura-coverage.xml
-  - zeus upload -t "text/html+pytest" pytest.html
-  - zeus upload -t "text/plain+pycodestyle" flake8.pycodestyle.log
-  - zeus upload -t "text/xml+checkstyle" eslint.checkstyle.xml
-  - zeus upload -t "application/webpack-stats+json" webpack-stats.json
+#  - npm install -g @zeus-ci/cli
+#  - zeus upload -t "text/xml+xunit" junit.xml
+#  - zeus upload -t "text/xml+xunit" jest.junit.xml
+#  - zeus upload -t "text/xml+coverage" coverage.xml
+#  - zeus upload -t "text/xml+coverage" coverage/cobertura-coverage.xml
+#  - zeus upload -t "text/html+pytest" pytest.html
+#  - zeus upload -t "text/plain+pycodestyle" flake8.pycodestyle.log
+#  - zeus upload -t "text/xml+checkstyle" eslint.checkstyle.xml
+#  - zeus upload -t "application/webpack-stats+json" webpack-stats.json
 # each attribute in the matrix will override the global attribute
 matrix:
   fast_finish: true
@@ -124,26 +124,26 @@ matrix:
         - memcached
         - redis-server
         - postgresql
-    - python: 2.7
-      env: TEST_SUITE=snuba SENTRY_TAGSTORE=sentry.tagstore.snuba.SnubaTagStorage
-      services:
-        - docker
-        - memcached
-        - redis-server
-        - postgresql
-      before_install:
-        - docker run -d --name clickhouse-server -p 9000:9000 -p 9009:9009 -p 8123:8123 --ulimit nofile=262144:262144 yandex/clickhouse-server
-        - docker run -d --env SNUBA_SETTINGS=test --env CLICKHOUSE_SERVER=clickhouse-server:9000 --name snuba -p 1218:1218 --link clickhouse-server:clickhouse-server getsentry/snuba
-        - docker ps -a
-  allow_failures:
-    - python: 2.7
-      env: TEST_SUITE=snuba SENTRY_TAGSTORE=sentry.tagstore.snuba.SnubaTagStorage
-notifications:
-  webhooks:
-    urls:
-      - https://zeus.ci/hooks/fa079cf6-8e6b-11e7-9155-0a580a28081c/public/provider/travis/webhook
-    on_success: always
-    on_failure: always
-    on_start: always
-    on_cancel: always
-    on_error: always
+#    - python: 2.7
+#      env: TEST_SUITE=snuba SENTRY_TAGSTORE=sentry.tagstore.snuba.SnubaTagStorage
+#      services:
+#        - docker
+#        - memcached
+#        - redis-server
+#        - postgresql
+#      before_install:
+#        - docker run -d --name clickhouse-server -p 9000:9000 -p 9009:9009 -p 8123:8123 --ulimit nofile=262144:262144 yandex/clickhouse-server
+#        - docker run -d --env SNUBA_SETTINGS=test --env CLICKHOUSE_SERVER=clickhouse-server:9000 --name snuba -p 1218:1218 --link clickhouse-server:clickhouse-server getsentry/snuba
+#        - docker ps -a
+#  allow_failures:
+#    - python: 2.7
+#      env: TEST_SUITE=snuba SENTRY_TAGSTORE=sentry.tagstore.snuba.SnubaTagStorage
+#notifications:
+#  webhooks:
+#    urls:
+#      - https://zeus.ci/hooks/fa079cf6-8e6b-11e7-9155-0a580a28081c/public/provider/travis/webhook
+#    on_success: always
+#    on_failure: always
+#    on_start: always
+#    on_cancel: always
+#    on_error: always
