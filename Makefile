@@ -28,8 +28,8 @@ install-python: install-python-base
 
 install-python-base:
 	@echo "--> Installing base Python dependencies"
-	$(PIP) install -r requirements-base.txt
-	# why dev requirements used to be required in base install? if build succeeds, remove this note
+	$(PIP) install -r requirements-base.txt -r requirements-dev.txt
+	# requirements-dev doesn't make sense, since they need to be in the base install
 
 install-python-develop: install-python-base
 	@echo "--> Installing base (develop) Python dependencies"
