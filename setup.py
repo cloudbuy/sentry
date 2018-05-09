@@ -72,7 +72,7 @@ def get_requirements(env):
 
 install_requires = get_requirements('base')
 dev_requires = get_requirements('dev')
-tests_require = get_requirements('test')
+tests_requires = get_requirements('tests')
 optional_requires = get_requirements('optional')
 
 DJANGO_VERSION = os.environ.get('DJANGO_VERSION')
@@ -131,8 +131,7 @@ setup(
     install_requires=install_requires,
     extras_require={
         'dev': dev_requires,
-        'postgres': [],
-        'tests': tests_require,
+        'tests': tests_requires,
         'optional': optional_requires,
     },
     cmdclass=cmdclass,

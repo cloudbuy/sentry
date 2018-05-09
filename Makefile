@@ -33,14 +33,12 @@ install-yarn-pkgs:
 
 install-sentry:
 	@echo "--> Installing Sentry"
-	$(PIP) install -e .
-	$(PIP) install -r requirements-dev.txt
-	# TODO: requirements-dev doesn't make sense, since they need to be in the base install afaik (needs to be tested further)
+	$(PIP) install -e ".[dev]"
+	# TODO: dev requirements doesn't make sense, since they need to be in the base install afaik (needs to be tested further)
 
 install-sentry-dev:
 	@echo "--> Installing Sentry (dev)"
-	$(PIP) install -e .
-	$(PIP) install -r requirements-dev.txt -r requirements-test.txt -r requirements-optional.txt
+	$(PIP) install -e ".[dev,tests,optional]"
 
 dev-docs:
 	$(PIP) install -r doc-requirements.txt
