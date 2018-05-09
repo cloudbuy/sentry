@@ -24,6 +24,7 @@ addons:
   chrome: stable
 env:
   global:
+    - MAKEFLAGS="-j3"
     - NODE_ENV=production
     - PIP_DISABLE_PIP_VERSION_CHECK=on
     - SENTRY_LIGHT_BUILD=1
