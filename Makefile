@@ -10,6 +10,7 @@ endif
 
 PIP = LDFLAGS="$(LDFLAGS)" pip -q
 
+# TODO all: install-system-pkgs install-yarn-pkgs install-sentry
 develop: setup-git develop-only
 
 setup-git:
@@ -18,7 +19,7 @@ setup-git:
 	cd .git/hooks && ln -sf ../../config/hooks/* ./
 	@echo ""
 
-develop-only: update-submodules install-system-pkgs install-yarn-pkgs install-sentry
+develop-only: update-submodules install-system-pkgs install-yarn-pkgs install-sentry-dev
 
 install-system-pkgs:
 	# TODO: make Brewfile and error message more descriptive
@@ -30,21 +31,14 @@ install-yarn-pkgs:
 	# Use NODE_ENV=development so that yarn installs both dependencies + devDependencies
 	NODE_ENV=development yarn install --pure-lockfile
 
-install-sentry: install-python-base
+install-sentry:
 	@echo "--> Installing Sentry"
-	$(PIP) install -e .
-
-install-python-base:
-	@echo "--> Installing base Python dependencies"
 	$(PIP) install -r requirements-base.txt -r requirements-dev.txt
-	# requirements-dev doesn't make sense, since they need to be in the base install
+	# TODO: requirements-dev doesn't make sense, since they need to be in the base install afaik (needs to be tested further)
 
-install-python-develop: install-python-base
-	@echo "--> Installing base (develop) Python dependencies"
-	$(PIP) install -r requirements-dev.txt -r requirements-test.txt
-
-install-python-optionals:
-	$(PIP) install -r requirements-optional.txt
+install-sentry-dev:
+	@echo "--> Installing Sentry (dev)"
+	$(PIP) install -r requirements-base.txt -r requirements-dev.txt -r requirements-test.txt -r requirements-optional.txt
 
 dev-docs:
 	$(PIP) install -r doc-requirements.txt
@@ -196,7 +190,7 @@ extract-api-docs:
 travis-setup-cassandra:
 	echo "create keyspace sentry with replication = {'class' : 'SimpleStrategy', 'replication_factor': 1};" | cqlsh --cqlversion=3.1.7
 	echo 'create table nodestore (key text primary key, value blob, flags int);' | cqlsh -k sentry --cqlversion=3.1.7
-travis-install-sentry: install-sentry install-python-optionals
+travis-install-sentry: install-sentry-dev
 	python -m pip install -q codecov
 travis-noop:
 	@echo "nothing to do here."
