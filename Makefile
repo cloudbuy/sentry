@@ -10,7 +10,7 @@ endif
 
 PIP = LDFLAGS="$(LDFLAGS)" pip -q
 
-develop-only: update-submodules install-brew install-python install-yarn
+develop-only: update-submodules install-yarn install-brew install-sentry
 
 develop: setup-git develop-only
 	@echo ""
@@ -24,7 +24,8 @@ install-yarn:
 install-brew:
 	@hash brew 2> /dev/null && brew bundle || (echo '! Homebrew not found, skipping system dependencies.')
 
-install-python: install-python-base
+install-sentry: install-python-base
+	$(PIP) install -e .
 
 install-python-base:
 	@echo "--> Installing base Python dependencies"
@@ -193,17 +194,17 @@ extract-api-docs:
 travis-setup-cassandra:
 	echo "create keyspace sentry with replication = {'class' : 'SimpleStrategy', 'replication_factor': 1};" | cqlsh --cqlversion=3.1.7
 	echo 'create table nodestore (key text primary key, value blob, flags int);' | cqlsh -k sentry --cqlversion=3.1.7
-travis-install-python: install-python install-python-optionals
+travis-install-sentry: install-sentry install-python-optionals
 	python -m pip install -q codecov
 travis-noop:
 	@echo "nothing to do here."
 
-.PHONY: travis-setup-cassandra travis-install-python travis-noop
+.PHONY: travis-setup-cassandra travis-install-sentry travis-noop
 
-travis-install-sqlite: travis-install-python
-travis-install-postgres: travis-install-python
+travis-install-sqlite: travis-install-sentry
+travis-install-postgres: travis-install-sentry
 	psql -c 'create database sentry;' -U postgres
-travis-install-mysql: travis-install-python
+travis-install-mysql: travis-install-sentry
 	pip install -q mysqlclient
 	echo 'create database sentry;' | mysql -uroot
 travis-install-acceptance: install-yarn travis-install-postgres
@@ -216,10 +217,10 @@ travis-install-acceptance: install-yarn travis-install-postgres
 travis-install-network: travis-install-postgres
 travis-install-snuba: travis-install-postgres
 travis-install-js:
-	$(MAKE) travis-install-python install-yarn
+	$(MAKE) travis-install-sentry install-yarn
 travis-install-cli: travis-install-postgres
 travis-install-dist:
-	$(MAKE) travis-install-python install-yarn
+	$(MAKE) travis-install-sentry install-yarn
 travis-install-django-18: travis-install-postgres
 
 .PHONY: travis-install-sqlite travis-install-postgres travis-install-js travis-install-cli travis-install-dist
