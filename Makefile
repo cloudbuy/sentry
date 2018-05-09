@@ -38,8 +38,6 @@ install-python-develop: install-python-base
 install-python-optionals:
 	$(PIP) install -r requirements-optional.txt
 
-dev-postgres: install-python
-
 dev-docs:
 	$(PIP) install -r doc-requirements.txt
 
@@ -184,7 +182,7 @@ extract-api-docs:
 	cd api-docs; python generator.py
 
 
-.PHONY: develop dev-postgres dev-docs setup-git build clean locale update-transifex update-submodules test testloop test-cli test-js test-styleguide test-python test-acceptance lint lint-python lint-js coverage publish scan-python
+.PHONY: develop dev-docs setup-git build clean locale update-transifex update-submodules test testloop test-cli test-js test-styleguide test-python test-acceptance lint lint-python lint-js coverage publish scan-python
 
 
 ############################
@@ -203,7 +201,7 @@ travis-noop:
 .PHONY: travis-setup-cassandra travis-install-python travis-noop
 
 travis-install-sqlite: travis-install-python
-travis-install-postgres: travis-install-python dev-postgres
+travis-install-postgres: travis-install-python
 	psql -c 'create database sentry;' -U postgres
 travis-install-mysql: travis-install-python
 	pip install -q mysqlclient
