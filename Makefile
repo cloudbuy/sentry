@@ -24,23 +24,19 @@ install-yarn:
 install-brew:
 	@hash brew 2> /dev/null && brew bundle || (echo '! Homebrew not found, skipping system dependencies.')
 
-install-python:
-	# must be executed serially
-	$(MAKE) install-python-base
-	$(MAKE) install-python-develop
+install-python: install-python-base
 
 install-python-base:
-	@echo "--> Installing Python dependencies"
-	$(PIP) install "setuptools>=0.9.8" "pip>=8.0.0"
-	# order matters here, base package must install first
-	$(PIP) install -e .
-	$(PIP) install "file://`pwd`#egg=sentry[dev]"
+	@echo "--> Installing base Python dependencies"
+	$(PIP) install -r requirements-base.txt
+	# why dev requirements used to be required in base install? if build succeeds, remove this note
 
-install-python-develop:
-	$(PIP) install "file://`pwd`#egg=sentry[dev,tests]"
+install-python-develop: install-python-base
+	@echo "--> Installing base (develop) Python dependencies"
+	$(PIP) install -r requirements-dev.txt -r requirements-test.txt
 
-install-python-tests:
-	$(PIP) install "file://`pwd`#egg=sentry[dev,tests,optional]"
+install-python-optionals:
+	$(PIP) install -r requirements-optional.txt
 
 dev-postgres: install-python
 
@@ -199,9 +195,7 @@ extract-api-docs:
 travis-setup-cassandra:
 	echo "create keyspace sentry with replication = {'class' : 'SimpleStrategy', 'replication_factor': 1};" | cqlsh --cqlversion=3.1.7
 	echo 'create table nodestore (key text primary key, value blob, flags int);' | cqlsh -k sentry --cqlversion=3.1.7
-travis-install-python:
-	$(MAKE) install-python-base
-	$(MAKE) install-python-tests
+travis-install-python: install-python install-python-optionals
 	python -m pip install -q codecov
 travis-noop:
 	@echo "nothing to do here."
