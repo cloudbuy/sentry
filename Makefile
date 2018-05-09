@@ -10,21 +10,28 @@ endif
 
 PIP = LDFLAGS="$(LDFLAGS)" pip -q
 
-develop-only: update-submodules install-yarn install-brew install-sentry
-
 develop: setup-git develop-only
+
+setup-git:
+	@echo "--> Installing git hooks"
+	git config branch.autosetuprebase always
+	cd .git/hooks && ln -sf ../../config/hooks/* ./
 	@echo ""
 
-install-yarn:
+develop-only: update-submodules install-system-pkgs install-yarn-pkgs install-sentry
+
+install-system-pkgs:
+	# TODO: make Brewfile and error message more descriptive
+	@hash brew 2> /dev/null && brew bundle || (echo '! Homebrew not found, skipping system dependencies.')
+
+install-yarn-pkgs:
 	@echo "--> Installing Node dependencies"
 	@hash yarn 2> /dev/null || (echo 'Cannot continue with JavaScript dependencies. Please install yarn before proceeding. For more information refer to https://yarnpkg.com/lang/en/docs/install/'; echo 'If you are on a mac run:'; echo '  brew install yarn'; exit 1)
 	# Use NODE_ENV=development so that yarn installs both dependencies + devDependencies
 	NODE_ENV=development yarn install --pure-lockfile
 
-install-brew:
-	@hash brew 2> /dev/null && brew bundle || (echo '! Homebrew not found, skipping system dependencies.')
-
 install-sentry: install-python-base
+	@echo "--> Installing Sentry"
 	$(PIP) install -e .
 
 install-python-base:
@@ -50,12 +57,6 @@ reset-db:
 	@echo "--> Applying migrations"
 	sentry upgrade
 
-setup-git:
-	@echo "--> Installing git hooks"
-	git config branch.autosetuprebase always
-	cd .git/hooks && ln -sf ../../config/hooks/* ./
-	@echo ""
-
 build: locale
 
 clean:
@@ -71,6 +72,7 @@ clean:
 
 build-js-po:
 	mkdir -p build
+	# TODO separate npm 8.9.1 issue with affecting entire Sentry build when only the docs need it
 	SENTRY_EXTRACT_TRANSLATIONS=1 ./node_modules/.bin/webpack
 
 locale: build-js-po
