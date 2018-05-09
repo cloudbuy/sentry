@@ -33,12 +33,14 @@ install-yarn-pkgs:
 
 install-sentry:
 	@echo "--> Installing Sentry"
-	$(PIP) install -r requirements-base.txt -r requirements-dev.txt
+	$(PIP) install -e .
+	$(PIP) install -r requirements-dev.txt
 	# TODO: requirements-dev doesn't make sense, since they need to be in the base install afaik (needs to be tested further)
 
 install-sentry-dev:
 	@echo "--> Installing Sentry (dev)"
-	$(PIP) install -r requirements-base.txt -r requirements-dev.txt -r requirements-test.txt -r requirements-optional.txt
+	$(PIP) install -e .
+	$(PIP) install -r requirements-dev.txt -r requirements-test.txt -r requirements-optional.txt
 
 dev-docs:
 	$(PIP) install -r doc-requirements.txt
@@ -203,7 +205,7 @@ travis-install-postgres: travis-install-sentry
 travis-install-mysql: travis-install-sentry
 	pip install -q mysqlclient
 	echo 'create database sentry;' | mysql -uroot
-travis-install-acceptance: install-yarn travis-install-postgres
+travis-install-acceptance: install-yarn-pkgs travis-install-postgres
 	wget -N http://chromedriver.storage.googleapis.com/$(shell curl https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip -P ~/
 	unzip ~/chromedriver_linux64.zip -d ~/
 	rm ~/chromedriver_linux64.zip
@@ -213,7 +215,7 @@ travis-install-acceptance: install-yarn travis-install-postgres
 travis-install-network: travis-install-postgres
 travis-install-snuba: travis-install-postgres
 travis-install-js:
-	$(MAKE) travis-install-sentry install-yarn
+	$(MAKE) travis-install-sentry install-yarn-pkgs
 travis-install-cli: travis-install-postgres
 travis-install-dist:
 	$(MAKE) travis-install-sentry install-yarn
