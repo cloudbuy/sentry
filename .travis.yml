@@ -6,6 +6,7 @@ language: python
 rvm:
   - 2.2
 cache:
+  apt: true
   yarn: true
   directories:
     - node_modules
