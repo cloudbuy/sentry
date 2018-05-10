@@ -38,6 +38,23 @@ class GitlabBackend(OAuthBackend):
     """GitLab OAuth authentication backend"""
     name = 'gitlab'
 
+    EXTRA_DATA = [
+        ('id', 'id'),
+        ('expires_in', 'expires'),
+        ('refresh_token', 'refresh_token')
+    ]
+
+    def get_user_details(self, response):
+        """Return user details from GitLab account"""
+        fullname, first_name, last_name = self.get_user_names(
+            response.get('name')
+        )
+        return {'username': response.get('username'),
+                'email': response.get('email') or '',
+                'fullname': fullname,
+                'first_name': first_name,
+                'last_name': last_name}
+
 
 class GitlabAuth(BaseOAuth2):
     """GitLab OAuth2 mechanism"""
@@ -46,7 +63,15 @@ class GitlabAuth(BaseOAuth2):
     AUTH_BACKEND = GitlabBackend
     SETTINGS_KEY_NAME = 'GITLAB_APP_ID'
     SETTINGS_SECRET_NAME = 'GITLAB_API_SECRET'
-    DEFAULT_SCOPE = [GITLAB_SCOPE]
+    REDIRECT_STATE = False
+    DEFAULT_SCOPE = ['read_user']
+
+    def user_data(self, access_token, *args, **kwargs):
+        """Loads user data from service"""
+        return self.get_json(self.api_url('/api/v4/user'), params={
+            'access_token': access_token
+        })
+
 
 
 # Backend definition
