@@ -1,7 +1,3 @@
-NPM_ROOT = ./node_modules
-STATIC_DIR = src/sentry/static/sentry
-DJANGO_VERSION := ">=1.6,<1.7"
-
 ifneq "$(wildcard /usr/local/opt/libxmlsec1/lib)" ""
 	LDFLAGS += -L/usr/local/opt/libxmlsec1/lib
 endif
@@ -9,7 +5,7 @@ ifneq "$(wildcard /usr/local/opt/openssl/lib)" ""
 	LDFLAGS += -L/usr/local/opt/openssl/lib
 endif
 
-PIP = LDFLAGS="$(LDFLAGS)" pip -q
+PIP = LDFLAGS="$(LDFLAGS)" pip
 
 
 ####################
@@ -84,7 +80,6 @@ install-sentry:
 
 install-sentry-dev:
 	@echo "--> Installing Sentry (dev)"
-	pip install -q Django${DJANGO_VERSION}
 	$(PIP) install -e ".[dev,tests,optional]"
 
 build-js-po:
@@ -123,7 +118,7 @@ test-cli:
 
 test-js:
 	@echo "--> Building static assets"
-	@${NPM_ROOT}/.bin/webpack --profile --json > webpack-stats.json
+	@./node_modules/.bin/webpack --profile --json > webpack-stats.json
 	@echo "--> Running JavaScript tests"
 	@npm run test-ci
 	@echo ""
