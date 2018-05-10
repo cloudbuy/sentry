@@ -67,7 +67,7 @@ IS_LIGHT_BUILD = os.environ.get('SENTRY_LIGHT_BUILD') == '1'
 
 def get_requirements(env):
     with open('requirements-{}.txt'.format(env)) as fp:
-        return [x.strip() for x in fp.read().split('\n') if not x.startswith('#')]
+        return fp.read()
 
 
 install_requires = get_requirements('base')
