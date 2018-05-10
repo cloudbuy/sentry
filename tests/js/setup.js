@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import ConfigStore from 'app/stores/configStore';
 import theme from 'app/utils/theme';
 
+jest.mock('lodash/debounce', () => jest.fn(fn => fn));
 jest.mock('app/utils/recreateRoute');
 jest.mock('app/translations');
 jest.mock('app/api');
@@ -24,6 +25,10 @@ jest.mock('react-router', () => {
       listen: jest.fn(() => {}),
     },
   };
+});
+jest.mock('react-lazyload', () => {
+  const LazyLoadMock = ({children}) => children;
+  return LazyLoadMock;
 });
 
 const constantDate = new Date(1508208080000); //National Pasta Day
